@@ -1,0 +1,9 @@
+C:\Users\GPOSMPC19\OneDrive - Resistencias San Marino, S.A. de C.V\Documentos\Varios\Sorter\rust_sorter\target\debug\deps\libfdeflate-aa15ae039b97c851.rmeta: C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src/lib.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\compress.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\decompress.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\huffman.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\tables.rs
+
+C:\Users\GPOSMPC19\OneDrive - Resistencias San Marino, S.A. de C.V\Documentos\Varios\Sorter\rust_sorter\target\debug\deps\fdeflate-aa15ae039b97c851.d: C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src/lib.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\compress.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\decompress.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\huffman.rs C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\tables.rs
+
+C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src/lib.rs:
+C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\compress.rs:
+C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\decompress.rs:
+C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\huffman.rs:
+C:\Users\GPOSMPC19\.cargo\registry\src\index.crates.io-6f17d22bba15001f\fdeflate-0.3.6\src\tables.rs:
