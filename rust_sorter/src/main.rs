@@ -3,7 +3,7 @@ use std::{
     thread,
     time::{SystemTime, UNIX_EPOCH},
 };
-
+use rand::Rng;
 use eframe::egui;
 
 fn main() -> Result<(), eframe::Error> {
@@ -23,18 +23,22 @@ fn main() -> Result<(), eframe::Error> {
 // Estructura de la aplicación.
 struct MyApp {
     curr: i32,
+    curr2: u32,
     arr: Vec<i32>,
     results: Vec<String>,
-    rx: Option<mpsc::Receiver<String>>
+    rx: Option<mpsc::Receiver<String>>,
+    empty_arr: bool,
 }
 
 impl Default for MyApp {
     fn default() -> Self {
         Self {
             curr: 0,
+            curr2: 0,
             arr: vec![],
             results: vec![],
-            rx: None
+            rx: None,
+            empty_arr: false,
         }
     }
 }
@@ -49,110 +53,115 @@ impl eframe::App for MyApp {
 
                 ui.add(egui::DragValue::new(&mut self.curr));
 
-                if ui.button("Add").clicked() {
+                let add_b = ui.button("Add");
+                if add_b.clicked() {
                     self.arr.push(self.curr);
                     self.curr = 0;
                 }
+
+                ui.label(format!("Array: {:?}", self.arr));
             });
 
-            let popup_id = ui.make_persistent_id("empty_array_id");
+            ui.label("OR...");
+
+            ui.horizontal(|ui| {
+                ui.label("How many random elements you want in the array?");
+
+                ui.add(egui::DragValue::new(&mut self.curr2));
+
+                let add_ran = ui.button("Add");
+                if add_ran.clicked() {
+                    self.arr = rand_arr(self.curr2);
+                }
+            });
 
             let sort_b = ui.button("SORT!!!");
 
-            let below = egui::AboveOrBelow::Below;
-            let close_on_click_outside = egui::popup::PopupCloseBehavior::CloseOnClickOutside;
+            ui.label("Results: ");
+
+            // Mostrar los resultados
+            for result in &self.results {
+                ui.label(result);
+            }
 
             if sort_b.clicked() {
-                match self.arr.len() {
-                    0 => egui::containers::popup::popup_above_or_below_widget(
-                        ui,
-                        popup_id,
-                        &sort_b,
-                        below,
-                        close_on_click_outside,
-                        |ui| {
-                            ui.set_min_width(200.0); // if you want to control the size
-                            ui.label("Empty Array");
-                        },
-                    ),
-                    _ => Some({
-                        let (tx, rx) = mpsc::channel();
-                        self.rx = Some(rx); 
-
-                        let aux_tx = tx.clone();
-                        let aux_arr = self.arr.clone();
-                        thread::spawn(move || {
-                            let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let sorted = bubble(aux_arr.clone());
-                            let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let result = format!(
-                                "Bubble Sort: {:?}, Time Elapsed: {:?}",
-                                sorted,
-                                end - start
-                            );
-                            aux_tx.send(result).unwrap();
-                        });
-
-                        let aux_tx = tx.clone();
-                        let aux_arr = self.arr.clone();
-                        thread::spawn(move || {
-                            let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let sorted = selection(aux_arr);
-                            let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let result = format!(
-                                "Selection Sort: {:?}, Time Elapsed: {:?}",
-                                sorted,
-                                end - start
-                            );
-                            aux_tx.send(result).unwrap();
-                        });
-
-                        let aux_tx = tx.clone();
-                        let aux_arr = self.arr.clone();
-                        thread::spawn(move || {
-                            let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let sorted = insertion(aux_arr);
-                            let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let result = format!(
-                                "Insertion Sort: {:?}, Time Elapsed: {:?}",
-                                sorted,
-                                end - start
-                            );
-                            aux_tx.send(result).unwrap();
-                        });
-
-                        let aux_tx = tx.clone();
-                        let aux_arr = self.arr.clone();
-                        thread::spawn(move || {
-                            let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let sorted = merge(aux_arr);
-                            let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let result = format!(
-                                "Merge Sort: {:?}, Time Elapsed: {:?}",
-                                sorted,
-                                end - start
-                            );
-                            aux_tx.send(result).unwrap();
-                        });
-
-                        let aux_tx = tx.clone();
-                        let aux_arr = self.arr.clone();
-                        thread::spawn(move || {
-                            let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let sorted = quick(aux_arr);
-                            let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-                            let result = format!(
-                                "Quick Sort: {:?}, Time Elapsed: {:?}",
-                                sorted,
-                                end - start
-                            );
-                            aux_tx.send(result).unwrap();
-                        });
-                    })
-                };
                 self.results.clear();
-            } else {
-                return Some(());
+                if self.arr.is_empty() {
+                    self.empty_arr = true;
+                } else {
+                    let (tx, rx) = mpsc::channel();
+                    self.rx = Some(rx);
+
+                    let aux_tx = tx.clone();
+                    let aux_arr = self.arr.clone();
+                    thread::spawn(move || {
+                        let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let sorted = bubble(aux_arr.clone());
+                        let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let result = format!(
+                            "Bubble Sort: Time Elapsed -> {:?}; Result -> {:?}",
+                            (end - start),
+                            sorted,
+                        );
+                        aux_tx.send(result).unwrap();
+                    });
+
+                    let aux_tx = tx.clone();
+                    let aux_arr = self.arr.clone();
+                    thread::spawn(move || {
+                        let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let sorted = selection(aux_arr);
+                        let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let result = format!(
+                            "Selection Sort: Time Elapsed -> {:?}; Result -> {:?}",
+                            (end - start),
+                            sorted,
+                        );
+                        aux_tx.send(result).unwrap();
+                    });
+
+                    let aux_tx = tx.clone();
+                    let aux_arr = self.arr.clone();
+                    thread::spawn(move || {
+                        let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let sorted = insertion(aux_arr);
+                        let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let result = format!(
+                            "Insertion Sort: Time Elapsed -> {:?}; Result -> {:?}",
+                            (end - start),
+                            sorted,
+                        );
+                        aux_tx.send(result).unwrap();
+                    });
+
+                    let aux_tx = tx.clone();
+                    let aux_arr = self.arr.clone();
+                    thread::spawn(move || {
+                        let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let sorted = merge(aux_arr);
+                        let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let result = format!(
+                            "Merge Sort: Time Elapsed -> {:?}; Result -> {:?}",
+                            (end - start),
+                            sorted,
+                        );
+                        aux_tx.send(result).unwrap();
+                    });
+
+                    let aux_tx = tx.clone();
+                    let aux_arr = self.arr.clone();
+                    thread::spawn(move || {
+                        let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let sorted = quick(aux_arr);
+                        let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+                        let result = format!(
+                            "Quick Sort: Time Elapsed -> {:?}; Result -> {:?}",
+                            (end - start),
+                            sorted,
+                        );
+                        aux_tx.send(result).unwrap();
+                    });
+                }
             }
 
             if let Some(rx) = &self.rx {
@@ -161,13 +170,10 @@ impl eframe::App for MyApp {
                 }
             }
 
-            // Mostrar los resultados
-            for result in &self.results {
-                ui.label(result);
-            }
-
             Some(())
         });
+
+        ctx.request_repaint();
     }
 }
 
@@ -194,9 +200,9 @@ fn selection(arr: Vec<i32>) -> Vec<i32> {
         for j in i + 1..n {
             if arr[j] < arr[min_idx] {
                 min_idx = j;
-                (arr[i], arr[min_idx]) = (arr[min_idx], arr[i]);
             }
         }
+        (arr[i], arr[min_idx]) = (arr[min_idx], arr[i]);
     }
     arr
 }
@@ -208,15 +214,16 @@ fn insertion(arr: Vec<i32>) -> Vec<i32> {
     for i in 1..n {
         let key = arr[i];
         let mut j = i - 1;
+        let mut neg: bool = false;
         while key < arr[j] {
             arr[j + 1] = arr[j];
-            if j ==0 {
+            if j == 0 {
+                neg = true;
                 break;
-            } else {
-                j -= 1;
             }
-            arr[j + 1] = key;
+            j -= 1;
         }
+        arr[ if neg {j} else {j + 1}] = key;
     }
     arr
 }
@@ -244,8 +251,8 @@ fn merge(arr: Vec<i32>) -> Vec<i32> {
             } else {
                 arr[k] = r[j];
                 j += 1;
-                k += 1;
             }
+            k += 1;
         }
 
         while i < l.len() {
@@ -275,4 +282,13 @@ fn quick(arr: Vec<i32>) -> Vec<i32> {
 
         return [quick(left), middle, quick(right)].concat();
     }
+}
+
+fn rand_arr(nums: u32) -> Vec<i32> {
+    let mut rng = rand::thread_rng();
+    let mut arr: Vec<i32> = vec![];
+    for _i in 0..nums {
+        arr.push(rng.gen_range(-32768..32768));
+    }
+    arr
 }
