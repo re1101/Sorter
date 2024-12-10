@@ -46,6 +46,7 @@ func main() {
 			fmt.Println("Array (last 10 elements):", arr[len(arr)-10:])
 		}
 
+		fmt.Println("\n Start Time: ", time.Now())
 		for s := 0; s < 5; s++ {
 			go displaySort(s, arr)
 		}
